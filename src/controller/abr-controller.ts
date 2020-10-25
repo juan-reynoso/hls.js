@@ -86,7 +86,6 @@ class AbrController implements ComponentAPI {
       This method monitors the download rate of the current fragment, and will downswitch if that fragment will not load
       quickly enough to prevent underbuffering
     */
-  // TODO: Prevent this from interfering with LL-HLS Part loading at or near playback speed (bwe of parts may be enough)
   private _abandonRulesCheck () {
     const { fragCurrent: frag, hls } = this;
     const { autoLevelEnabled, config, media } = hls;
@@ -94,9 +93,9 @@ class AbrController implements ComponentAPI {
       return;
     }
 
-    const loader = frag.loader;
-    // If loader has been destroyed or loading has been aborted, stop timer and return
-    if (!loader || loader.stats.aborted) {
+    const stats: LoaderStats = frag.stats;
+    // If loading has been aborted and not in lowLatencyMode, stop timer and return
+    if (frag.stats.aborted && !config.lowLatencyMode) {
       logger.warn('frag loader destroy or aborted, disarm abandonRules');
       this.clearTimer();
       // reset forced auto level value so that next level will be selected
@@ -109,7 +108,6 @@ class AbrController implements ComponentAPI {
       return;
     }
 
-    const stats: LoaderStats = loader.stats;
     const requestDelay = performance.now() - stats.loading.start;
     const playbackRate = Math.abs(media.playbackRate);
     // In order to work with a stable bandwidth, only begin monitoring bandwidth after half of the fragment has been loaded
@@ -161,7 +159,10 @@ class AbrController implements ComponentAPI {
       Time to underbuffer: ${bufferStarvationDelay.toFixed(3)} s`);
     hls.nextLoadLevel = nextLoadLevel;
     this.bwEstimator.sample(requestDelay, stats.loaded);
-    loader.abort();
+    if (frag.loader) {
+      frag.loader.abort();
+      this.fragCurrent = null;
+    }
     this.clearTimer();
     hls.trigger(Events.FRAG_LOAD_EMERGENCY_ABORTED, { frag, stats });
   }

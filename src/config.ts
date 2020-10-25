@@ -284,16 +284,16 @@ function timelineConfig (): TimelineControllerConfig {
   };
 }
 
-export function mergeConfig (defaultConfig: HlsConfig, userConfig: any): HlsConfig {
+export function mergeConfig (defaultConfig: HlsConfig, userConfig: Partial<HlsConfig>): HlsConfig {
   if ((userConfig.liveSyncDurationCount || userConfig.liveMaxLatencyDurationCount) && (userConfig.liveSyncDuration || userConfig.liveMaxLatencyDuration)) {
     throw new Error('Illegal hls.js config: don\'t mix up liveSyncDurationCount/liveMaxLatencyDurationCount and liveSyncDuration/liveMaxLatencyDuration');
   }
 
-  if (userConfig.liveMaxLatencyDurationCount !== void 0 && userConfig.liveMaxLatencyDurationCount <= userConfig.liveSyncDurationCount) {
+  if (userConfig.liveMaxLatencyDurationCount !== void 0 && (userConfig.liveSyncDurationCount === void 0 || userConfig.liveMaxLatencyDurationCount <= userConfig.liveSyncDurationCount)) {
     throw new Error('Illegal hls.js config: "liveMaxLatencyDurationCount" must be greater than "liveSyncDurationCount"');
   }
 
-  if (userConfig.liveMaxLatencyDuration !== void 0 && (userConfig.liveMaxLatencyDuration <= userConfig.liveSyncDuration || userConfig.liveSyncDuration === void 0)) {
+  if (userConfig.liveMaxLatencyDuration !== void 0 && (userConfig.liveSyncDuration === void 0 || userConfig.liveMaxLatencyDuration <= userConfig.liveSyncDuration)) {
     throw new Error('Illegal hls.js config: "liveMaxLatencyDuration" must be greater than "liveSyncDuration"');
   }
 

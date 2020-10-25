@@ -21,15 +21,15 @@ class XhrLoader implements Loader<LoaderContext> {
   }
 
   destroy (): void {
-    this.loader =
-      this.callbacks = null;
+    this.callbacks = null;
     this.abortInternal();
+    this.loader = null;
   }
 
   abortInternal (): void {
-    this.stats.aborted = true;
     const loader = this.loader;
     if (loader && loader.readyState !== 4) {
+      this.stats.aborted = true;
       loader.abort();
     }
     self.clearTimeout(this.requestTimeout);

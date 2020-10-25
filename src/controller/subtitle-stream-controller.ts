@@ -284,14 +284,14 @@ export class SubtitleStreamController extends BaseStreamController implements Ne
         this.hls.trigger(Events.KEY_LOADING, { frag: foundFrag });
       } else if (foundFrag && fragmentTracker.getState(foundFrag) === FragmentState.NOT_LOADED) {
         // only load if fragment is not loaded
-        this.loadFragment(foundFrag, targetBufferTime);
+        this.loadFragment(foundFrag, trackDetails, targetBufferTime);
       }
     }
   }
 
-  protected loadFragment (frag: Fragment, targetBufferTime: number) {
+  protected loadFragment (frag: Fragment, levelDetails: LevelDetails, targetBufferTime: number) {
     this.fragCurrent = frag;
-    super.loadFragment(frag, targetBufferTime);
+    super.loadFragment(frag, levelDetails, targetBufferTime);
   }
 
   stopLoad () {
