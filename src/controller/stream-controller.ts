@@ -645,9 +645,9 @@ export default class StreamController extends BaseStreamController implements Ne
     // this.log(`Transmuxing ${frag.sn} of [${details.startSN} ,${details.endSN}],level ${frag.level}, cc ${frag.cc}`);
     const transmuxer = this.transmuxer = this.transmuxer ||
           new TransmuxerInterface(this.hls, PlaylistLevelType.MAIN, this._handleTransmuxComplete.bind(this), this._handleTransmuxerFlush.bind(this));
-    const partial = !!part;
-    const chunkMeta = new ChunkMetadata(frag.level, frag.sn, frag.stats.chunkCount, payload.byteLength,
-      part ? part.index : -1, partial);
+    const partIndex = part ? part.index : -1;
+    const partial = partIndex !== -1;
+    const chunkMeta = new ChunkMetadata(frag.level, frag.sn as number, frag.stats.chunkCount, payload.byteLength, partIndex, partial);
     const initPTS = this.initPTS[frag.cc];
 
     transmuxer.push(

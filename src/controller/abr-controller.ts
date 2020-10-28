@@ -95,7 +95,7 @@ class AbrController implements ComponentAPI {
 
     const stats: LoaderStats = frag.stats;
     // If loading has been aborted and not in lowLatencyMode, stop timer and return
-    if (frag.stats.aborted && !config.lowLatencyMode) {
+    if (stats.aborted && !config.lowLatencyMode) {
       logger.warn('frag loader destroy or aborted, disarm abandonRules');
       this.clearTimer();
       // reset forced auto level value so that next level will be selected

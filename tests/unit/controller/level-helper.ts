@@ -223,13 +223,13 @@ expect: ${JSON.stringify(merged.fragments[i])}`).to.deep.equal(merged.fragments[
 
     it('returns the targetduration of the new level if averagetargetduration is falsy', function () {
       const newPlaylist = generatePlaylist([3, 4]);
-      newPlaylist.averagetargetduration = void 0;
+      newPlaylist.averagetargetduration = undefined;
       newPlaylist.targetduration = 4;
       newPlaylist.updated = true;
       let actual = computeReloadInterval(newPlaylist, new LoadStats());
       expect(actual).to.equal(4000);
 
-      newPlaylist.averagetargetduration = void 0;
+      newPlaylist.averagetargetduration = undefined;
       actual = computeReloadInterval(newPlaylist, new LoadStats());
       expect(actual).to.equal(4000);
     });

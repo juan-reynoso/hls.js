@@ -295,7 +295,7 @@ export default class BaseStreamController extends TaskLoop implements NetworkCom
     const { frag, partsLoaded } = fragLoadedEndData;
     // If we did not load parts, or loaded all parts, we have complete (not partial) fragment data
     const complete = !partsLoaded || (partsLoaded && (partsLoaded.length === 0 || partsLoaded.some(fragLoaded => !fragLoaded)));
-    const chunkMeta = new ChunkMetadata(frag.level, frag.sn, frag.stats.chunkCount + 1, 0, -1, !complete);
+    const chunkMeta = new ChunkMetadata(frag.level, frag.sn as number, frag.stats.chunkCount + 1, 0, -1, !complete);
     transmuxer.flush(chunkMeta);
   }
 
@@ -346,7 +346,7 @@ export default class BaseStreamController extends TaskLoop implements NetworkCom
             loadPartIndex(index + 1);
           } else {
             if (index >= partList.length - 1) {
-              console.log(`last in list sn: ${loadedPart.fragment.sn} p: ${loadedPart!.index} partList[${index}]`);
+              // console.log(`last in list sn: ${loadedPart.fragment.sn} p: ${loadedPart!.index} partList[${index}]`);
               // FIXME: We shouldn't have to abort here. Resolve with partial result as long as we can resume from the correct position later.
               //  Or, wait for partList update
               frag.stats.aborted = true;

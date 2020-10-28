@@ -191,8 +191,6 @@ class AudioStreamController extends BaseStreamController implements NetworkCompo
         this.state = State.IDLE;
       }
     }
-    default:
-      break;
     }
 
     this.onTickEnd();
@@ -444,9 +442,9 @@ class AudioStreamController extends BaseStreamController implements NetworkCompo
       // this.log(`Transmuxing ${sn} of [${details.startSN} ,${details.endSN}],track ${trackId}`);
       // time Offset is accurate if level PTS is known, or if playlist is not sliding (not live)
       const accurateTimeOffset = false; // details.PTSKnown || !details.live;
-      const partial = !!part;
-      const chunkMeta = new ChunkMetadata(frag.level, frag.sn, frag.stats.chunkCount, payload.byteLength,
-        part ? part.index : -1, partial);
+      const partIndex = part ? part.index : -1;
+      const partial = partIndex !== -1;
+      const chunkMeta = new ChunkMetadata(frag.level, frag.sn as number, frag.stats.chunkCount, payload.byteLength, partIndex, partial);
       transmuxer.push(payload, initSegmentData, audioCodec, '', frag, part, details.totalduration, accurateTimeOffset, chunkMeta, initPTS);
     } else {
       logger.log(`Unknown video PTS for cc ${frag.cc}, waiting for video PTS before demuxing audio frag ${frag.sn} of [${details.startSN} ,${details.endSN}],track ${trackId}`);

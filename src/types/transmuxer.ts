@@ -21,7 +21,7 @@ export class ChunkMetadata {
     audiovideo: getNewPerformanceTiming()
   };
 
-  constructor (level, sn, id, size = 0, part = -1, partial = false) {
+  constructor (level: number, sn: number, id: number, size = 0, part = -1, partial = false) {
     this.level = level;
     this.sn = sn;
     this.id = id;
