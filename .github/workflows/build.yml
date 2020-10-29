@@ -6,13 +6,16 @@ jobs:
   config:
     runs-on: ubuntu-latest
     outputs:
-      canUseSauce: ${{ secrets.SAUCE_USERNAME && secrets.SAUCE_ACCESS_KEY }}
+      canUseSauce: ${{ (secrets.SAUCE_USERNAME && secrets.SAUCE_ACCESS_KEY) }}
       isStableTagPush: ${{ startsWith(github.ref, 'refs/tags/v') }}
     steps:
       - name: build config
         run: ''
 
   build:
+    needs: [config]
+    # TODO remove
+    if: ${{ needs.config.outputs.canUseSauce }}
     needs: config
     runs-on: ubuntu-latest
 
@@ -49,6 +52,7 @@ jobs:
           node -e 'require("./" + require("./package.json").main)'
         env:
           CI: true
+          IS_STABLE_TAG_PUSH: ${{ needs.config.outputs.isStableTagPush }}
 
       - name: upload build
         uses: actions/upload-artifact@v2
