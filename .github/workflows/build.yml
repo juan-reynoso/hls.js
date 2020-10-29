@@ -16,7 +16,7 @@ jobs:
     needs: [config]
     # TODO remove
     if: ${{ needs.config.outputs.canUseSauce }}
-    needs: config
+    # needs: config
     runs-on: ubuntu-latest
 
     steps:
