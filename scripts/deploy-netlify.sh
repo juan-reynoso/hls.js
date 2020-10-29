@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# GITHUB_TOKEN and NETLIFY_ACCESS_TOKEN set in travis
+# GITHUB_TOKEN and NETLIFY_ACCESS_TOKEN required
 
 # ensure we have fetched origin/master
 git remote set-branches origin master

@@ -3,7 +3,14 @@ name: Build
 on: [push]
 
 jobs:
+  config:
+    runs-on: ubuntu-latest
+    outputs:
+      canUseSauce: ${{ secrets.SAUCE_USERNAME && secrets.SAUCE_ACCESS_KEY }}
+      isStableTagPush: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
   build:
+    needs: config
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +36,7 @@ jobs:
       - name: install and build
         run: |
           npm ci
+          # TRAVIS_MODE=release node ./scripts/set-package-version.js
           npm run lint
           npm run type-check
           npm run build
@@ -83,8 +91,46 @@ jobs:
         env:
           CI: true
 
+  # publish_netlify:
+  #   needs: test_unit
+  #   if: startsWith(github.ref, 'refs/tags/v')
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: cache node_modules
+  #       uses: actions/cache@v2
+  #       env:
+  #         cache-name: cache-node-modules
+  #       with:
+  #         path: ~/.npm
+  #         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-build-${{ env.cache-name }}-
+  #           ${{ runner.os }}-build-
+  #           ${{ runner.os }}-
+
+  #     - name: use Node.js
+  #       uses: actions/setup-node@v1
+  #       with:
+  #         node-version: "12"
+
+  #     - name: download build
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: build
+
+  #     - name: build netlify
+  #       run: |
+  #         npm ci
+  #         ./scripts/build-netlify.sh
+  #         ./scripts/deploy-netlify.sh
+  #       env:
+  #         CI: true
+
   test_functional_required:
-    needs: test_unit
+    needs: [config, test_unit]
+    if: ${ needs.config.outputs.canUseSauce }
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
