@@ -129,8 +129,8 @@ jobs:
   #         CI: true
 
   test_functional_required:
-    needs: [config, test_unit]
-    if: ${ needs.config.outputs.canUseSauce }
+    needs: [test_unit]
+    # if: ${ needs.config.outputs.canUseSauce }
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
